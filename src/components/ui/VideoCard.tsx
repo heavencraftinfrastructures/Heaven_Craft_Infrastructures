@@ -31,18 +31,42 @@ export default function VideoCard({
     setPlaying(true);
   };
 
+  const handlePause = () => {
+    const v = videoRef.current;
+    if (v) {
+      v.pause();
+      v.currentTime = 0;
+    }
+    setPlaying(false);
+  };
+
+  // Real mouse hover (pointerType "mouse") still plays on enter / pauses on
+  // leave. Touch devices don't fire a reliable, matching enter/leave pair —
+  // mobile browsers send a synthetic pointerenter on first tap but no
+  // pointerleave until the user taps elsewhere, which used to leave the
+  // video stuck playing with no way to pause it. Reading e.pointerType lets
+  // one set of handlers serve both input types correctly without any
+  // client-only device detection (no state, no effect, no hydration risk).
+  const handlePointerEnter = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "mouse") handlePlay();
+  };
+  const handlePointerLeave = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "mouse") handlePause();
+  };
+  const handleClick = () => {
+    if (playing) {
+      handlePause();
+    } else {
+      handlePlay();
+    }
+  };
+
   return (
     <div
       className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-hc-gold/15 bg-hc-surface"
-      onMouseEnter={handlePlay}
-      onMouseLeave={() => {
-        const v = videoRef.current;
-        if (v) {
-          v.pause();
-          v.currentTime = 0;
-        }
-        setPlaying(false);
-      }}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
+      onClick={handleClick}
     >
       {!errored && (
         <video
@@ -95,7 +119,7 @@ export default function VideoCard({
                 {description}
               </p>
               <span className="mt-2 inline-block text-[11px] uppercase tracking-[0.2em] text-hc-gold-light">
-                Hover to preview
+                Hover or tap to preview
               </span>
             </motion.div>
           )}

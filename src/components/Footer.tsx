@@ -11,18 +11,8 @@ const quickLinks = [
 
 const serviceList = [
   "Interior Design & Execution",
-  "Modular Kitchens & Custom Furniture",
-  "Living & Hall Interiors",
-  "Exterior & Façade Design",
-  "Villa & Landscape Exteriors",
-  "Residential & Commercial Construction",
-];
-
-const socials = [
-  { label: "Instagram", href: "#" },
-  { label: "LinkedIn", href: "#" },
-  { label: "Facebook", href: "#" },
-  { label: "Pinterest", href: "#" },
+  "Construction & Site Execution",
+  "Architecture & Design Concepts",
 ];
 
 export default function Footer() {
@@ -49,18 +39,6 @@ export default function Footer() {
               A multidisciplinary design and construction studio delivering
               interiors, exteriors, structures, and planning — end to end.
             </p>
-            <div className="mt-5 flex gap-3">
-              {socials.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  aria-label={s.label}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-hc-gold/20 text-xs text-hc-ivory/70 transition-colors duration-300 hover:border-hc-gold hover:text-hc-gold-light"
-                >
-                  {s.label[0]}
-                </a>
-              ))}
-            </div>
           </div>
 
           <div>
@@ -100,12 +78,14 @@ export default function Footer() {
             </h5>
             <ul className="space-y-2.5 text-sm text-hc-ivory/75">
               <li>{studioAddress}</li>
-              <li>hello@heavencraft.com</li>
+              <li>heavencraftinfrastructures@gmail.com</li>
             </ul>
-            <ul className="mt-4 space-y-1 text-xs text-hc-concrete">
+            <ul className="mt-4 space-y-3 text-xs text-hc-concrete">
               {teamContacts.map((c) => (
-                <li key={c.name}>
-                  {c.name} — {c.role} — {c.phone}
+                <li key={c.name} className="flex flex-col gap-0.5">
+                  <span className="text-hc-ivory/85 font-medium">{c.name}</span>
+                  <span>{c.role}</span>
+                  <span>{c.phone}</span>
                 </li>
               ))}
             </ul>

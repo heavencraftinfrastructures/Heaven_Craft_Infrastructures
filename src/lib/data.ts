@@ -96,10 +96,25 @@ export const REAL = {
     "/media/services/villa-6.jpg",
     "/media/services/villa-7.jpg",
     "/media/services/villa-8.jpg",
+    "/media/services/villa-9.jpg",
   ],
   residential: ["/media/services/residential-1.jpg"],
   facade: ["/media/services/facade-1.jpg", "/media/planning/structural-plan-1.jpg"],
   structural: ["/media/services/structural-1.jpg"],
+  // Live on-site construction photography — foundation, RCC framing,
+  // scaffolding, and formwork from active project sites.
+  construction: Array.from(
+    { length: 24 },
+    (_, i) => `/media/services/construction-${i + 1}.jpg`
+  ),
+  // Architecture & design detail sheets — each page pairs the photoreal
+  // 3D render with its CAD elevation/plan drawing, so the gallery shows
+  // both the finished-look visualization and the underlying technical
+  // design.
+  architecture: Array.from(
+    { length: 21 },
+    (_, i) => `/media/services/architecture-${i + 1}.jpg`
+  ),
   structuralPlans: [
     "/media/planning/structural-plan-1.jpg",
     "/media/planning/structural-plan-2.jpg",
@@ -107,31 +122,33 @@ export const REAL = {
   ],
   before: "/media/planning/before-1.jpg",
   after: "/media/planning/after-1.jpg",
+  // Client-supplied aerial site photo for the Planning section's story image.
+  planningSite: "/media/planning/planning-site-1.jpg",
 };
 
 // Real preview clips — compressed, muted, hover-to-play (see VideoCard).
 export const VIDEO = {
-  walkthroughSimulation: "/media/planning/video-walkthrough.mp4",
+  walkthroughSimulation: "/media/planning/video-walkthrough-v3.mp4",
   constructionTimelapse: "/media/planning/video-render.mp4",
   droneFlythrough: "/media/planning/video-drone.mp4",
 };
 
 // WebM (VP9) companions — smaller, and playable even without an H.264 license.
 export const VIDEO_WEBM = {
-  walkthroughSimulation: "/media/planning/video-walkthrough.webm",
+  walkthroughSimulation: "/media/planning/video-walkthrough-v3.webm",
   constructionTimelapse: "/media/planning/video-render.webm",
   droneFlythrough: "/media/planning/video-drone.webm",
 };
 
 export const VIDEO_POSTER = {
-  walkthroughSimulation: "/media/planning/poster-walkthrough.jpg",
+  walkthroughSimulation: "/media/planning/poster-walkthrough-v3.jpg",
   constructionTimelapse: "/media/planning/poster-render.jpg",
   droneFlythrough: "/media/planning/poster-drone.jpg",
 };
 
 export const stats = [
-  { label: "Years Experience", value: 10, suffix: "+" },
-  { label: "Projects Completed", value: 250, suffix: "+" },
+  { label: "Years Experience", value: 5, suffix: "+" },
+  { label: "Projects Completed", value: 120, suffix: "+" },
   { label: "Happy Clients", value: 120, suffix: "+" },
   { label: "Expert Professionals", value: 40, suffix: "+" },
 ];
@@ -171,86 +188,65 @@ export const advantageCards = [
   },
 ];
 
-export type ServiceCategory = "Interior" | "Exterior" | "Building";
+export type ServiceCategory = "Interior" | "Construction" | "Architecture & Designs";
 
 export const serviceCategories: ServiceCategory[] = [
   "Interior",
-  "Exterior",
-  "Building",
+  "Construction",
+  "Architecture & Designs",
+];
+
+// Exactly one card per category — every Interior-tagged photo lives in the
+// Interior gallery, every Construction-tagged photo lives in the
+// Construction gallery. `interior-3.jpg` (REAL.interior[2]) is pulled out
+// of the interior set and into construction per the client's instruction.
+const interiorGallery = [
+  ...REAL.furniture,
+  ...REAL.kitchen,
+  ...REAL.hall,
+  REAL.interior[0],
+  REAL.interior[1],
+  REAL.interior[3],
+  REAL.interior[4],
+];
+
+const constructionGallery = [
+  ...REAL.residential,
+  IMG.building1,
+  ...REAL.structural,
+  ...REAL.facade,
+  ...REAL.villa,
+  ...REAL.construction,
+  REAL.interior[2],
 ];
 
 export const services = [
   {
     category: "Interior" as ServiceCategory,
-    title: "Interior Design & Construction",
-    tag: "Living / Office / Retail",
+    title: "Interior Design & Execution",
+    tag: "Living / Kitchens / Furniture / Halls",
     description:
-      "Modular interiors, kitchens, bedrooms, and office fit-outs — custom lighting, ceiling design, flooring, and furniture built to spec.",
-    image: REAL.interior[0],
-    gallery: REAL.interior,
+      "Modular interiors, kitchens, custom furniture, and living & hall spaces — layout, lighting, storage, and finish built around how you actually live.",
+    image: interiorGallery[0],
+    gallery: interiorGallery,
   },
   {
-    category: "Interior" as ServiceCategory,
-    title: "Custom Furniture & Finishing",
-    tag: "Bespoke Craftsmanship",
+    category: "Construction" as ServiceCategory,
+    title: "Construction & Site Execution",
+    tag: "Civil / Structural / RCC",
     description:
-      "Hand-detailed millwork, premium finish materials, and lighting design tailored to the mood and function of every room.",
-    image: REAL.furniture[0],
-    gallery: REAL.furniture,
+      "Foundations, structural RCC and steel work, façades, villa and site construction, and complete building execution for homes and commercial complexes.",
+    image: constructionGallery[0],
+    gallery: constructionGallery,
   },
   {
-    category: "Interior" as ServiceCategory,
-    title: "Modular Kitchen Design",
-    tag: "Kitchens",
+    category: "Architecture & Designs" as ServiceCategory,
+    title: "Architecture & Design Concepts",
+    tag: "Full Concept Detailing",
     description:
-      "Functional, beautifully finished kitchens — island layouts, smart storage, and premium countertops built around how you actually cook.",
-    image: REAL.kitchen[0],
-    gallery: REAL.kitchen,
-  },
-  {
-    category: "Interior" as ServiceCategory,
-    title: "Living & Hall Interiors",
-    tag: "Living Rooms / Halls",
-    description:
-      "Open, light-filled living and hall spaces designed for how families and guests actually gather — layout, lighting, and finish in balance.",
-    image: REAL.hall[0],
-    gallery: REAL.hall,
-  },
-  {
-    category: "Exterior" as ServiceCategory,
-    title: "Building Elevations & Façades",
-    tag: "Cladding / Elevation",
-    description:
-      "Contemporary façade cladding and elevation design that balance architectural statement with material performance.",
-    image: REAL.facade[0],
-    gallery: REAL.facade,
-  },
-  {
-    category: "Exterior" as ServiceCategory,
-    title: "Villa & Landscape Exteriors",
-    tag: "Residential Exteriors",
-    description:
-      "Landscape-linked exteriors, outdoor seating, and villa façades designed to extend living space into the outdoors.",
-    image: REAL.villa[0],
-    gallery: REAL.villa,
-  },
-  {
-    category: "Building" as ServiceCategory,
-    title: "Residential & Commercial Construction",
-    tag: "RCC / Steel Structures",
-    description:
-      "Foundations, structural RCC and steel work, and complete building execution for homes and commercial complexes.",
-    image: REAL.residential[0],
-    gallery: [...REAL.residential, IMG.building1],
-  },
-  {
-    category: "Building" as ServiceCategory,
-    title: "Structural Execution",
-    tag: "Site to Structure",
-    description:
-      "Full-scale structural build-out with quality-checked material sourcing and certified engineering oversight.",
-    image: REAL.structural[0],
-    gallery: REAL.structural,
+      "Complete architectural detailing for one of our residential projects — photoreal room renders paired with their CAD floor plans and elevation drawings, room by room.",
+    image: REAL.architecture[2],
+    gallery: REAL.architecture,
   },
 ];
 
@@ -299,30 +295,6 @@ export const planningSteps = [
   },
 ];
 
-export const simulationTabs = [
-  {
-    key: "interior",
-    label: "Interior Simulation",
-    images: [IMG.simInterior1, IMG.simInterior2, IMG.interior3, IMG.interior4],
-  },
-  {
-    key: "exterior",
-    label: "Exterior Simulation",
-    images: [IMG.simExterior1, IMG.simExterior2, IMG.exterior2, IMG.exterior4],
-  },
-  {
-    key: "structural",
-    label: "Structural Planning",
-    images: [
-      ...REAL.structuralPlans,
-      IMG.blueprint1,
-      IMG.blueprint2,
-      IMG.blueprint3,
-      IMG.building4,
-    ],
-  },
-];
-
 export const videoShowcase = [
   {
     title: "3D Walkthrough Simulation",
@@ -339,13 +311,6 @@ export const videoShowcase = [
     src: VIDEO.constructionTimelapse,
     webmSrc: VIDEO_WEBM.constructionTimelapse,
   },
-  {
-    title: "Drone Exterior Flythrough",
-    description: "Aerial perspective of the completed exterior massing.",
-    poster: VIDEO_POSTER.droneFlythrough,
-    src: VIDEO.droneFlythrough,
-    webmSrc: VIDEO_WEBM.droneFlythrough,
-  },
 ];
 
 export const scrubCaptions = [
@@ -360,7 +325,7 @@ export const showcaseItems = [
   { caption: "Modern Kitchen Design", image: REAL.kitchen[0], span: "" },
   { caption: "Custom Furniture Detail", image: REAL.furniture[0], span: "" },
   { caption: "Living Hall Interior", image: REAL.hall[0], span: "" },
-  { caption: "Villa Exterior", image: REAL.villa[0], span: "" },
+  { caption: "Villa Exterior", image: REAL.villa[7], span: "" },
   {
     caption: "Structural Layout Planning",
     image: REAL.structuralPlans[0],
@@ -368,7 +333,6 @@ export const showcaseItems = [
   },
   { caption: "Interior Concept Simulation", image: IMG.simInterior1, span: "" },
   { caption: "On-Site Execution", image: REAL.villa[3], span: "" },
-  { caption: "Villa Twilight Facade", image: REAL.villa[4], span: "" },
   { caption: "RCC Structural Framework", image: REAL.villa[5], span: "" },
   { caption: "Foundation & Site Execution", image: REAL.structural[0], span: "row-span-2" },
   { caption: "Bedroom Interior Design", image: REAL.hall[4], span: "" },
@@ -388,7 +352,7 @@ export const studioAddress =
 
 export const teamContacts = [
   {
-    name: "Chetan Kumar",
+    name: "Chethan Gowda",
     role: "Chief Head of Heavencraft",
     phone: "+91 98801 02797",
     phone2: "08172-258777",

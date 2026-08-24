@@ -1,11 +1,24 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useSyncExternalStore } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { IMG } from "@/lib/data";
 import MagneticButton from "./ui/MagneticButton";
 import BlueprintReveal from "./ui/BlueprintReveal";
+
+const MOBILE_QUERY = "(max-width: 767px), (pointer: coarse)";
+function subscribeMobileQuery(callback: () => void) {
+  const mq = window.matchMedia(MOBILE_QUERY);
+  mq.addEventListener("change", callback);
+  return () => mq.removeEventListener("change", callback);
+}
+function getMobileQuerySnapshot() {
+  return window.matchMedia(MOBILE_QUERY).matches;
+}
+function getMobileQueryServerSnapshot() {
+  return false;
+}
 
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
@@ -14,10 +27,23 @@ export default function Hero() {
     offset: ["start start", "end start"],
   });
 
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "35%"]);
-  const midY = useTransform(scrollYProgress, [0, 1], ["0%", "60%"]);
-  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "90%"]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  // Mobile phones were visibly stuttering on first load — the scroll-linked
+  // parallax layers (background/midground/content all recomputing every
+  // scroll frame) plus the BlueprintReveal SVG and floating line accents
+  // all animating in at once during initial paint were too much for lower-
+  // powered devices. Desktop had no reported issue, so this only trims the
+  // effect on narrow / coarse-pointer devices — the desktop JSX path below
+  // is completely unchanged.
+  const isMobile = useSyncExternalStore(
+    subscribeMobileQuery,
+    getMobileQuerySnapshot,
+    getMobileQueryServerSnapshot
+  );
+
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", isMobile ? "0%" : "35%"]);
+  const midY = useTransform(scrollYProgress, [0, 1], ["0%", isMobile ? "0%" : "60%"]);
+  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", isMobile ? "0%" : "90%"]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, isMobile ? 1 : 0]);
 
   return (
     <section
@@ -44,13 +70,20 @@ export default function Hero() {
         className="absolute inset-0 bp-grid opacity-40 mix-blend-overlay"
       />
 
-      {/* Blueprint-to-building scroll reveal — constructs itself as you scroll */}
-      <BlueprintReveal
-        progress={scrollYProgress}
-        className="pointer-events-none absolute right-[-10%] top-1/2 h-[70vh] w-[70vh] -translate-y-1/2 opacity-70 sm:right-[2%] sm:h-[80vh] sm:w-[80vh]"
-      />
+      {/* Blueprint-to-building scroll reveal — constructs itself as you scroll.
+          Skipped on mobile: it's tied to the same scroll progress as the
+          parallax layers above and was part of what made first load feel
+          heavy on phones; desktop keeps it exactly as before. */}
+      {!isMobile && (
+        <BlueprintReveal
+          progress={scrollYProgress}
+          className="pointer-events-none absolute right-[-10%] top-1/2 h-[70vh] w-[70vh] -translate-y-1/2 opacity-70 sm:right-[2%] sm:h-[80vh] sm:w-[80vh]"
+        />
+      )}
 
-      {/* Floating architectural line accents */}
+      {/* Floating architectural line accents — desktop-only decoration,
+          skipped on mobile for the same first-load smoothness reason. */}
+      {!isMobile && (
       <div className="pointer-events-none absolute inset-0">
         <motion.div
           initial={{ scaleX: 0 }}
@@ -71,34 +104,50 @@ export default function Hero() {
           className="absolute right-[10%] bottom-[24%] h-24 w-24 rounded-full border border-hc-gold/30"
         />
       </div>
+      )}
 
-      {/* Foreground content */}
+      {/* Foreground content.
+          Desktop keeps its original 5-element staggered reveal (each with
+          its own y-offset + delay) exactly as it was. On mobile that same
+          stagger — 5 separate animated elements settling one after another
+          over ~1.7s, several of them also translating on the y-axis and
+          triggering layout — was the "stuck" first-load feel being
+          reported. Mobile instead gets a single quick fade with no
+          y-transform, so there's one paint instead of five. */}
       <motion.div
         style={{ y: contentY, opacity: contentOpacity }}
         className="relative z-10 mx-auto flex h-full max-w-5xl flex-col items-center justify-center px-6 text-center"
       >
         <motion.span
-          initial={{ opacity: 0, y: 16 }}
+          initial={isMobile ? { opacity: 0 } : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.15 }}
+          transition={isMobile ? { duration: 0.35 } : { duration: 0.7, delay: 0.15 }}
           className="font-serif-label italic text-hc-gold-light text-lg tracking-[0.2em] uppercase mb-6"
         >
-          Interior · Exterior · Construction · Planning
+          Architecture · Interior · Construction
         </motion.span>
 
         <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold leading-[1.05] tracking-tight">
           <motion.span
-            initial={{ opacity: 0, y: 30 }}
+            initial={isMobile ? { opacity: 0 } : { opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            transition={
+              isMobile
+                ? { duration: 0.35 }
+                : { duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }
+            }
             className="block text-hc-ivory"
           >
             Crafting Spaces.
           </motion.span>
           <motion.span
-            initial={{ opacity: 0, y: 30 }}
+            initial={isMobile ? { opacity: 0 } : { opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            transition={
+              isMobile
+                ? { duration: 0.35 }
+                : { duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }
+            }
             className="block text-gradient-gold"
           >
             Building Futures.
@@ -112,21 +161,21 @@ export default function Hero() {
         </h1>
 
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={isMobile ? { opacity: 0 } : { opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.75 }}
+          transition={isMobile ? { duration: 0.35 } : { duration: 0.8, delay: 0.75 }}
           className="mt-8 max-w-2xl text-base sm:text-lg text-hc-concrete leading-relaxed"
         >
           Heaven Craft Infrastructure &amp; Interiors delivers refined
           interiors, striking exteriors, structural excellence, and
           intelligent planning for residential, commercial, and government
-          projects across Hassan, Karnataka.
+          projects across India.
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={isMobile ? { opacity: 0 } : { opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.95 }}
+          transition={isMobile ? { duration: 0.35 } : { duration: 0.8, delay: 0.95 }}
           className="mt-10 flex flex-wrap items-center justify-center gap-4"
         >
           <MagneticButton href="#work" variant="solid">

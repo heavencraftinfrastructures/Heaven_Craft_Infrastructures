@@ -49,17 +49,42 @@ export default function SmoothScroll() {
     // Brochure gallery's "View All" reveal) while the user is mid-scroll,
     // Lenis can clamp its scroll target to the pre-expansion limit and
     // never resume moving toward the new, larger one — the page reads as
-    // "stuck" partway down, with everything below (including the
-    // Featured Visual Showcase scroll-driven section) unreachable. Any
-    // component that changes document height in one shot should dispatch
-    // this event right after so Lenis recalculates immediately instead of
-    // waiting on its own debounce.
+    // "stuck" partway down, with everything below unreachable. A component
+    // that changes document height in one shot can dispatch this event to
+    // force an immediate recalculation instead of waiting on Lenis's own
+    // debounce.
     const onContentResize = () => lenis.resize();
     window.addEventListener("lenis-resize", onContentResize);
+
+    // Belt-and-braces: rather than requiring every component that can
+    // shift the page's total height (lazy-loaded images finishing layout,
+    // fonts swapping in, a gallery card count changing) to remember to
+    // dispatch "lenis-resize" itself, watch <body> directly and resize
+    // Lenis whenever its height actually changes. This is what fixed the
+    // "can't scroll past Planning down to Contact" report — the page grew
+    // taller as more Construction Work / Architecture photos loaded in
+    // below the fold, after Lenis had already measured a shorter limit.
+    let lastHeight = document.body.scrollHeight;
+    const bodyResizeObserver = new ResizeObserver(() => {
+      const nextHeight = document.body.scrollHeight;
+      if (nextHeight !== lastHeight) {
+        lastHeight = nextHeight;
+        lenis.resize();
+      }
+    });
+    bodyResizeObserver.observe(document.body);
+
+    // Also catch the case where images/fonts finish loading after the
+    // window "load" event has already fired once but layout keeps
+    // settling for a moment afterward.
+    const onWindowLoad = () => lenis.resize();
+    window.addEventListener("load", onWindowLoad);
 
     return () => {
       cancelAnimationFrame(rafId);
       window.removeEventListener("lenis-resize", onContentResize);
+      window.removeEventListener("load", onWindowLoad);
+      bodyResizeObserver.disconnect();
       lenis.destroy();
     };
   }, []);

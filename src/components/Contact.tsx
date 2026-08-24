@@ -79,8 +79,12 @@ export default function Contact() {
 
     const errors = validateContactForm(payload);
     if (Object.keys(errors).length > 0) {
+      // Each invalid field already shows its own inline error message right
+      // below it (see the Field component) — a second, generic summary
+      // message squeezed in next to the submit button was wrapping oddly
+      // and breaking the button's layout on narrow screens, so it's gone;
+      // the per-field messages are sufficient on their own.
       setFieldErrors(errors);
-      setErrorMsg("Please fix the highlighted fields.");
       return;
     }
     setFieldErrors({});
@@ -270,7 +274,7 @@ export default function Contact() {
                     />
                   </Field>
 
-                  <div className="flex items-center gap-4">
+                  <div className="space-y-3">
                     <button
                       type="submit"
                       disabled={loading}
@@ -283,7 +287,7 @@ export default function Contact() {
                       {loading ? "Sending…" : "Submit Enquiry"}
                     </button>
                     {errorMsg && (
-                      <span className="text-xs text-hc-copper">{errorMsg}</span>
+                      <p className="text-xs text-hc-copper">{errorMsg}</p>
                     )}
                   </div>
                 </motion.form>
@@ -305,7 +309,7 @@ export default function Contact() {
               </h4>
               <div className="space-y-2 text-sm text-hc-ivory/85">
                 <p>{studioAddress}</p>
-                <p>hello@heavencraft.com</p>
+                <p>heavencraftinfrastructures@gmail.com</p>
               </div>
               <a
                 href="https://www.google.com/maps?cid=15412685536990962454"
