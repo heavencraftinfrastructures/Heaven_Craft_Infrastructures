@@ -1,0 +1,238 @@
+@import "tailwindcss";
+
+:root {
+  --hc-bg: #0a0b0d;
+  --hc-bg-soft: #101215;
+  --hc-surface: #15181c;
+  --hc-surface-2: #1b1f24;
+  --hc-ivory: #ece7db;
+  --hc-concrete: #b9b3a6;
+  --hc-gold: #c9a24d;
+  --hc-gold-light: #e8c887;
+  --hc-copper: #b3703c;
+  --hc-line: rgba(201, 162, 77, 0.18);
+}
+
+@theme inline {
+  --color-background: var(--hc-bg);
+  --color-foreground: var(--hc-ivory);
+  --color-hc-bg: var(--hc-bg);
+  --color-hc-bg-soft: var(--hc-bg-soft);
+  --color-hc-surface: var(--hc-surface);
+  --color-hc-surface-2: var(--hc-surface-2);
+  --color-hc-ivory: var(--hc-ivory);
+  --color-hc-concrete: var(--hc-concrete);
+  --color-hc-gold: var(--hc-gold);
+  --color-hc-gold-light: var(--hc-gold-light);
+  --color-hc-copper: var(--hc-copper);
+  --font-display: "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-body: "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: Georgia, "Times New Roman", ui-serif, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Offsets every #anchor jump (nav links, "Speak With Our Team", etc.) so
+     the section heading lands below the fixed header instead of hiding
+     under it. */
+  scroll-padding-top: 6rem;
+}
+
+body {
+  background: var(--hc-bg);
+  color: var(--hc-ivory);
+  font-family: var(--font-body), sans-serif;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-display), sans-serif;
+}
+
+.font-serif-label {
+  font-family: var(--font-serif), serif;
+}
+
+/* Blueprint grid overlay */
+.bp-grid {
+  background-image:
+    linear-gradient(var(--hc-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hc-line) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.bp-grid-fine {
+  background-image:
+    linear-gradient(var(--hc-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hc-line) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+
+/* Film grain overlay */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(120deg, var(--hc-gold-light), var(--hc-gold) 45%, var(--hc-copper));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass {
+  background: rgba(21, 24, 28, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(201, 162, 77, 0.15);
+}
+
+.divider-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--hc-gold), transparent);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--hc-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--hc-surface-2);
+  border-radius: 8px;
+  border: 2px solid var(--hc-gold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.clip-reveal {
+  clip-path: inset(0 0 0 0);
+}
+
+.magnetic-btn {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hc-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(201, 162, 77, 0.2);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--hc-ivory);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.hc-input::placeholder {
+  color: rgba(236, 231, 219, 0.35);
+}
+
+.hc-input:focus {
+  border-color: var(--hc-gold);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.hc-input option {
+  background: var(--hc-surface);
+  color: var(--hc-ivory);
+}
+
+.hc-input-error {
+  border-color: rgba(248, 113, 113, 0.6);
+  background: rgba(248, 113, 113, 0.05);
+}
+
+.hc-input-error:focus {
+  border-color: rgba(248, 113, 113, 0.8);
+}
+
+/* Luxury animated border glow — rotating gold hairline + soft pulsing halo */
+@property --hc-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.luxury-glow-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.luxury-glow-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--hc-angle),
+    transparent 0%,
+    var(--hc-gold-light) 12%,
+    transparent 28%,
+    transparent 72%,
+    var(--hc-copper) 88%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: luxury-rotate 7s linear infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.luxury-glow-card::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  box-shadow: 0 0 26px 2px rgba(201, 162, 77, 0.16);
+  animation: luxury-pulse 4.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes luxury-rotate {
+  to {
+    --hc-angle: 360deg;
+  }
+}
+
+@keyframes luxury-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    box-shadow: 0 0 20px 0 rgba(201, 162, 77, 0.12);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 34px 4px rgba(201, 162, 77, 0.22);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .luxury-glow-card::before,
+  .luxury-glow-card::after {
+    animation: none;
+  }
+}
